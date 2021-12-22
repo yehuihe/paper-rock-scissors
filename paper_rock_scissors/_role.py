@@ -6,7 +6,7 @@
 import random
 import warnings
 
-from ._base import ListInstanceMixin, BaseRole, MOVE_CHOICE
+from ._base import ListInstanceMixin, BaseRole, MoveChoice
 
 
 class Player(ListInstanceMixin, BaseRole):
@@ -32,8 +32,8 @@ class Player(ListInstanceMixin, BaseRole):
 
     def _pprint_moves(self):
         res = f"{self.name}'s turn. Choose current round move within the following: \n"
-        for k, v in MOVE_CHOICE.items():
-            res = res + str(k) + '. ' + v + '\n'
+        for name, member in MoveChoice.__members__.items():
+            res = res + str(name) + '. ' + member.value + '\n'
         return res
 
     def get_move(self, prompt):
@@ -46,7 +46,7 @@ class Player(ListInstanceMixin, BaseRole):
 
         Returns
         -------
-        move : int
+        move : MoveChoice
             Current round move.
         """
         while True:
@@ -55,14 +55,14 @@ class Player(ListInstanceMixin, BaseRole):
                 move = int(input(prompt))
             except ValueError:
                 print(f"Warning: Invalid input. "
-                      f"Please enter a integer from 1 to {len(MOVE_CHOICE)}")
+                      f"Please enter a integer from 1 to {len(MoveChoice)}")
                 continue
-            if move < 1 or move > len(MOVE_CHOICE):
+            if move < 1 or move > len(MoveChoice):
                 print(f"Warning: Invalid input. "
-                      f"Please enter a integer from 1 to {len(MOVE_CHOICE)}")
+                      f"Please enter a integer from 1 to {len(MoveChoice)}")
             else:
                 break
-        return move
+        return MoveChoice(move)
 
 
 class Computer(ListInstanceMixin, BaseRole):
@@ -112,8 +112,7 @@ class Computer(ListInstanceMixin, BaseRole):
 
         Returns
         -------
-        move : int
+        move : MoveChoice
             Random AI move.
         """
-        random.seed(self.seed)
-        return random.randint(1, len(MOVE_CHOICE))
+        return MoveChoice(random.randint(1, len(MoveChoice)))

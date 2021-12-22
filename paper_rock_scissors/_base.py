@@ -4,15 +4,21 @@
 # Author: Yehui He <yehui.he@hotmail.com>
 
 from abc import ABCMeta, abstractmethod
+from enum import Enum, auto
 import time
 import warnings
 
 
-MOVE_CHOICE = {
-    1: 'rock',
-    2: 'paper',
-    3: 'scissors',
-}
+class MoveChoice(Enum):
+    ROCK = auto()
+    PAPER = auto()
+    SCISSORS = auto()
+
+
+class Outcome(Enum):
+    WIN = auto()
+    LOSE = auto()
+    DRAW = auto()
 
 
 class ListInstanceMixin:
@@ -236,15 +242,15 @@ class Match(ListInstanceMixin):
 
         Parameters
         ----------
-        player_move : int
+        player_move : MoveChoice
             Player's move for current round.
 
-        ai_move : int
+        ai_move : MoveChoice
             AI's move for current round.
 
         Returns
         -------
-        outcome : str or None
+        outcome : Outcome
             Outcome of the current round.
         """
         if player_move == 1 and ai_move == 2 or \
@@ -274,10 +280,11 @@ class Match(ListInstanceMixin):
             print(self._pprint_state())
 
             # Prompt input from player
+            # Return MoveChoice
             move = self.player.get_move("Choose a move for this round: ")
 
             # Notify player's choice
-            print("%s's move: %s" % (self.player.name, MOVE_CHOICE.get(move)))
+            print("%s's move: %s" % (self.player.name, move.name))
 
             # Computer's turn
             print("\n%s is making a decision..." % self.computer.name)
@@ -285,9 +292,9 @@ class Match(ListInstanceMixin):
 
             ai_move = self.computer.get_move()
             print("%s's move: %s" % (self.computer.name,
-                                     MOVE_CHOICE.get(ai_move)))
-            print("Current round is: %s vs %s" % (MOVE_CHOICE.get(move),
-                                                  MOVE_CHOICE.get(ai_move)))
+                                     ai_move.name))
+            print("Current round is: %s vs %s" % (move.name,
+                                                  ai_move.name))
 
             outcome = self._outcome(move, ai_move)
 
