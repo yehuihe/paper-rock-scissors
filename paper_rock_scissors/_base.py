@@ -125,6 +125,13 @@ class Match(ListInstanceMixin):
     _winner : {_role.Player, _role.Computer}
         Winner of the game.
     """
+
+    _ROLES_MAPPING = {
+        MoveChoice.ROCK: MoveChoice.SCISSORS,
+        MoveChoice.SCISSORS: MoveChoice.PAPER,
+        MoveChoice.PAPER: MoveChoice.ROCK,
+    }
+
     def __init__(
             self,
             player,
@@ -253,16 +260,12 @@ class Match(ListInstanceMixin):
         outcome : Outcome
             Outcome of the current round.
         """
-        if player_move == 1 and ai_move == 2 or \
-            player_move == 2 and ai_move == 3 or \
-            player_move == 3 and ai_move == 1:
-            return self.computer.name
-        elif player_move == 1 and ai_move == 3 or \
-            player_move == 2 and ai_move == 1 or \
-            player_move == 3 and ai_move == 2:
-            return self.player.name
+        if player_move is ai_move:
+            return Outcome.DRAW
+        elif Match._ROLES_MAPPING[player_move] is ai_move:
+            return Outcome.WIN
         else:
-            return 'Draw'
+            return Outcome.LOSE
 
     def play(self):
         # Validate roles input parameters
@@ -298,7 +301,15 @@ class Match(ListInstanceMixin):
 
             outcome = self._outcome(move, ai_move)
 
-            print("Winner of the current round is: %s \n" % outcome)
+            if outcome is Outcome.WIN:
+                print("Winner of the current round is: %s \n"
+                      % self.player.name)
+            elif outcome is Outcome.LOSE:
+                print("Winner of the current round is: %s \n"
+                      % self.computer.name)
+            else:
+                print("It's a draw for this round")
+
             if outcome == self.computer.name:
                 self.computer.score += 1
             elif outcome == self.player.name:
