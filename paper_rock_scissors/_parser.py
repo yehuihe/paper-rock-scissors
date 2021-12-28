@@ -27,5 +27,7 @@ parser.add_argument('-cn', '--computer-name', type=str, default='ai',
                     help='Computer name')
 parser.add_argument('-s', '--seed', default=None,
                     help='Computer random number generator seed')
+parser.add_argument('-sp', '--sleep', type=int, default=1,
+                    help='Sleep time when computer is making a decision')
 parser.add_argument('-V', '--version', action='version',
                     version=f'%(prog)s {VERSION}')

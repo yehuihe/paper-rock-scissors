@@ -16,8 +16,11 @@ if __name__ == '__main__':
     computer = Computer(name=args.computer_name,
                         seed=args.seed)
 
-    match = Match(player, computer,
-                  target_score=args.target_score, max_rounds=args.max_rounds)
+    match = Match(player,
+                  computer,
+                  target_score=args.target_score,
+                  max_rounds=args.max_rounds,
+                  sleep=args.sleep)
 
     match.play()
 

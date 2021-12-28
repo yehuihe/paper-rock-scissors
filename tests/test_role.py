@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from paper_rock_scissors import Player, Computer
+from paper_rock_scissors import Player, Computer, MoveChoice
 
 
 class PlayerTestCase(unittest.TestCase):
@@ -19,12 +19,14 @@ class PlayerTestCase(unittest.TestCase):
     @patch('builtins.input', return_value=1)
     def test_valid_move(self, input):
         player = Player()
-        self.assertEqual(player.get_move("Choose a move for this round: "), 1)
+        self.assertEqual(player.get_move("Choose a move for this round: "),
+                         MoveChoice(1))
 
     @patch('builtins.input', side_effect=[5, 1])
     def test_invalid_move(self, input):
         player = Player()
-        self.assertEqual(player.get_move("Choose a move for this round: "), 1)
+        self.assertEqual(player.get_move("Choose a move for this round: "),
+                         MoveChoice(1))
 
 
 class ComputerTestCase(unittest.TestCase):
@@ -47,7 +49,7 @@ class ComputerTestCase(unittest.TestCase):
 
     def test_random_move(self):
         computer = Computer(seed=0)
-        self.assertEqual(computer.get_move(), 2)
+        self.assertEqual(computer.get_move(), MoveChoice(3))
 
 
 if __name__ == '__main__':

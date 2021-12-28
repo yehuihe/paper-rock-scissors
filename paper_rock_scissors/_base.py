@@ -122,14 +122,17 @@ class Match(ListInstanceMixin):
         Maximum round of the game. Once _curr_round reaches
         the max the game ends.
 
+    _sleep : int, default=1
+        Sleep time between each rounds.
+
     _winner : {_role.Player, _role.Computer}
         Winner of the game.
     """
 
     _ROLES_MAPPING = {
-        MoveChoice.ROCK: MoveChoice.SCISSORS,
-        MoveChoice.SCISSORS: MoveChoice.PAPER,
-        MoveChoice.PAPER: MoveChoice.ROCK,
+        MoveChoice.ROCK: [MoveChoice.SCISSORS],
+        MoveChoice.SCISSORS: [MoveChoice.PAPER],
+        MoveChoice.PAPER: [MoveChoice.ROCK],
     }
 
     def __init__(
@@ -139,12 +142,14 @@ class Match(ListInstanceMixin):
             target_score=10,
             curr_round=0,
             max_rounds=20,
+            sleep=1,
             winner=None):
         self._player = player
         self._computer = computer
         self._target_score = target_score
         self._curr_round = curr_round
         self._max_rounds = max_rounds
+        self._sleep = sleep
         self._winner = winner
 
     @property
@@ -209,6 +214,16 @@ class Match(ListInstanceMixin):
             # Default max_rounds set to target_score
             self.max_rounds = self.target_score
 
+        # sleep
+        if not isinstance(self._sleep, int) or self._sleep < 0:
+            warnings.warn(
+                "sleep must be positive integer;"
+                f"got {self._sleep} instead.",
+                RuntimeWarning,
+            )
+            # Default sleep set to 1
+            self._sleep = 1
+
     @staticmethod
     def _pprint_rules():
         """Return rules of the current game."""
@@ -230,7 +245,8 @@ class Match(ListInstanceMixin):
                "%(computer_name)s score: %(computer_score)d \n" \
                "Target Score: %(target_score)d\n" \
                "Current Round: %(curr_round)d\n" \
-               "Maximum Rounds: %(max_rounds)d\nWinner: %(winner)s\n" %\
+               "Maximum Rounds: %(max_rounds)d\n" \
+               "Sleep: %(sleep)d\nWinner: %(winner)s\n" %\
                {'player_name': self.player.name,
                 'player_score': self.player.score,
                 'computer_name': self.computer.name,
@@ -238,9 +254,11 @@ class Match(ListInstanceMixin):
                 'target_score': self.target_score,
                 'curr_round': self.curr_round,
                 'max_rounds': self.max_rounds,
+                'sleep': self._sleep,
                 'winner': self.winner}
 
-    def _outcome(self, player_move, ai_move):
+    @staticmethod
+    def _outcome(player_move, ai_move):
         """Determine the outcome of current round.
 
         Paper beats (wraps) rock.
@@ -262,7 +280,7 @@ class Match(ListInstanceMixin):
         """
         if player_move is ai_move:
             return Outcome.DRAW
-        elif Match._ROLES_MAPPING[player_move] is ai_move:
+        elif ai_move in Match._ROLES_MAPPING[player_move]:
             return Outcome.WIN
         else:
             return Outcome.LOSE
@@ -291,7 +309,7 @@ class Match(ListInstanceMixin):
 
             # Computer's turn
             print("\n%s is making a decision..." % self.computer.name)
-            time.sleep(1)
+            time.sleep(self._sleep)
 
             ai_move = self.computer.get_move()
             print("%s's move: %s" % (self.computer.name,
@@ -299,22 +317,18 @@ class Match(ListInstanceMixin):
             print("Current round is: %s vs %s" % (move.name,
                                                   ai_move.name))
 
-            outcome = self._outcome(move, ai_move)
+            outcome = Match._outcome(move, ai_move)
 
             if outcome is Outcome.WIN:
                 print("Winner of the current round is: %s \n"
                       % self.player.name)
+                self.player.score += 1
             elif outcome is Outcome.LOSE:
                 print("Winner of the current round is: %s \n"
                       % self.computer.name)
+                self.computer.score += 1
             else:
                 print("It's a draw for this round")
-
-            if outcome == self.computer.name:
-                self.computer.score += 1
-            elif outcome == self.player.name:
-                self.player.score += 1
-            self.curr_round += 1
 
             if self.player.score == self.target_score:
                 self.winner = self.player

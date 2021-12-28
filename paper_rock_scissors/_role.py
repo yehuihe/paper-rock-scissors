@@ -33,7 +33,7 @@ class Player(ListInstanceMixin, BaseRole):
     def _pprint_moves(self):
         res = f"{self.name}'s turn. Choose current round move within the following: \n"
         for name, member in MoveChoice.__members__.items():
-            res = res + str(name) + '. ' + member.value + '\n'
+            res = res + str(name) + '. ' + str(member.value) + '\n'
         return res
 
     def get_move(self, prompt):
