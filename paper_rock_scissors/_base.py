@@ -125,6 +125,9 @@ class Match(ListInstanceMixin):
     _sleep : int, default=1
         Sleep time between each rounds.
 
+    _verbose : int, default=0
+        Verbosity level.
+
     _winner : {_role.Player, _role.Computer}
         Winner of the game.
     """
@@ -143,6 +146,7 @@ class Match(ListInstanceMixin):
             curr_round=0,
             max_rounds=20,
             sleep=1,
+            verbose=0,
             winner=None):
         self._player = player
         self._computer = computer
@@ -150,6 +154,7 @@ class Match(ListInstanceMixin):
         self._curr_round = curr_round
         self._max_rounds = max_rounds
         self._sleep = sleep
+        self._verbose = verbose
         self._winner = winner
 
     @property
@@ -192,6 +197,22 @@ class Match(ListInstanceMixin):
     def winner(self, value):
         self._winner = value
 
+    @property
+    def sleep(self):
+        return self._sleep
+
+    @sleep.setter
+    def sleep(self, value):
+        self._sleep = value
+
+    @property
+    def verbose(self):
+        return self._verbose
+
+    @verbose.setter
+    def verbose(self, value):
+        self._verbose = value
+
     def _check_params(self):
         # target_score
         if not isinstance(self.target_score, int) or self.target_score <= 0:
@@ -223,6 +244,17 @@ class Match(ListInstanceMixin):
             )
             # Default sleep set to 1
             self._sleep = 1
+
+        # verbose
+        if not isinstance(self._verbose, int) or \
+            self._verbose < 0 or self._verbose > 3:
+            warnings.warn(
+                "verbose must be positive integer between 0 and 3"
+                f"got {self._verbose} instead.",
+                RuntimeWarning,
+            )
+            # Default verbose set to 1
+            self._verbose = 1
 
     @staticmethod
     def _pprint_rules():
@@ -298,37 +330,43 @@ class Match(ListInstanceMixin):
         # Game ends while there is a winner or total rounds reach the maximum
         while not self.winner and self.curr_round <= self.max_rounds:
             # Print current game state
-            print(self._pprint_state())
+            if self.verbose >= 1:
+                print(self._pprint_state())
 
             # Prompt input from player
             # Return MoveChoice
             move = self.player.get_move("Choose a move for this round: ")
 
-            # Notify player's choice
-            print("%s's move: %s" % (self.player.name, move.name))
+            if self.verbose >= 1:
+                # Notify player's choice
+                print("%s's move: %s" % (self.player.name, move.name))
 
-            # Computer's turn
-            print("\n%s is making a decision..." % self.computer.name)
+                # Computer's turn
+                print("\n%s is making a decision..." % self.computer.name)
             time.sleep(self._sleep)
 
             ai_move = self.computer.get_move()
-            print("%s's move: %s" % (self.computer.name,
-                                     ai_move.name))
-            print("Current round is: %s vs %s" % (move.name,
-                                                  ai_move.name))
+            if self.verbose >= 1:
+                print("%s's move: %s" % (self.computer.name,
+                                         ai_move.name))
+                print("Current round is: %s vs %s" % (move.name,
+                                                      ai_move.name))
 
             outcome = Match._outcome(move, ai_move)
 
             if outcome is Outcome.WIN:
-                print("Winner of the current round is: %s \n"
-                      % self.player.name)
+                if self.verbose >= 1:
+                    print("Winner of the current round is: %s \n"
+                          % self.player.name)
                 self.player.score += 1
             elif outcome is Outcome.LOSE:
-                print("Winner of the current round is: %s \n"
-                      % self.computer.name)
+                if self.verbose >= 1:
+                    print("Winner of the current round is: %s \n"
+                          % self.computer.name)
                 self.computer.score += 1
             else:
-                print("It's a draw for this round")
+                if self.verbose >= 1:
+                    print("It's a draw for this round")
 
             if self.player.score == self.target_score:
                 self.winner = self.player

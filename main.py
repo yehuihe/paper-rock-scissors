@@ -20,7 +20,8 @@ if __name__ == '__main__':
                   computer,
                   target_score=args.target_score,
                   max_rounds=args.max_rounds,
-                  sleep=args.sleep)
+                  sleep=args.sleep,
+                  verbose=args.verbose)
 
     match.play()
 

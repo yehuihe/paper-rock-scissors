@@ -32,11 +32,34 @@ class MatchTestCase(unittest.TestCase):
             match._check_params()
         self.assertEqual(match.max_rounds, match.target_score)
 
-    def test_negative_sleep(self):
+    def test_invalid_sleep(self):
+        # Negative sleep
         match = Match(self.player, self.computer, sleep=-1)
         with self.assertWarns(RuntimeWarning):
             match._check_params()
         self.assertEqual(match._sleep, 1)
+        # Invalid sleep
+        match.sleep = 'no'
+        with self.assertWarns(RuntimeWarning):
+            match._check_params()
+        self.assertEqual(match._sleep, 1)
+
+    def test_invalid_verbose(self):
+        # Negative verbose
+        match = Match(self.player, self.computer, verbose=-1)
+        with self.assertWarns(RuntimeWarning):
+            match._check_params()
+        self.assertEqual(match._verbose, 1)
+        # Greater than 3 verbose
+        match.verbose = 4
+        with self.assertWarns(RuntimeWarning):
+            match._check_params()
+        self.assertEqual(match._verbose, 1)
+        # Invalid verbose
+        match.verbose = 'no'
+        with self.assertWarns(RuntimeWarning):
+            match._check_params()
+        self.assertEqual(match._verbose, 1)
 
     @patch('builtins.input', side_effect=[1, 2, 1, 3, 2, 3, 1, 2, 1, 1, 3, 2, 3, 2, 2, 3, 3, 1, 2, 1, 3, 1])
     def test_reach_target_score_play(self, input):
@@ -45,7 +68,8 @@ class MatchTestCase(unittest.TestCase):
                       computer,
                       target_score=5,
                       max_rounds=20,
-                      sleep=0)
+                      sleep=0,
+                      verbose=0)
         match.play()
         self.assertEqual(match.winner, self.player)
 
@@ -56,7 +80,8 @@ class MatchTestCase(unittest.TestCase):
                       computer,
                       target_score=10,
                       max_rounds=10,
-                      sleep=0)
+                      sleep=0,
+                      verbose=0)
         match.play()
         self.assertEqual(match.winner, computer)
 
