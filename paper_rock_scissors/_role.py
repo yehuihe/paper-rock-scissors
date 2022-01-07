@@ -83,7 +83,7 @@ class Computer(ListInstanceMixin, BaseRole):
         Random number generator's seed.
     """
 
-    def __init__(self, name='ai', role='Computer', score=0, *, seed=None):
+    def __init__(self, name='ai', role='Computer', score=0, seed=None):
         super().__init__(role, name, score)
         self.seed = seed
 
