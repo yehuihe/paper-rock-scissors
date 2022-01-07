@@ -13,7 +13,7 @@ most familiar one.</p>
 <p><b>python main.py -h</b> will show cli and arguments</p>
 <p>For example: 
 <b>python main.py -t 10 -m 15 -pn Yehui -cn IMC -s 0</b></p>
-<p>will set appropriate attributes for the match. Or use default values</p>
+<p>will set appropriate attributes for the GameEnvironment. Or use default values</p>
 
 <p>The console output of unit testing is a bit lengthy. I intented to implement
 verbose option but couldn't spend more time on this assignment due to other commitments.

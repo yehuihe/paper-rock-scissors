@@ -14,13 +14,13 @@ class Player(ListInstanceMixin, BaseRole):
 
     Parameters
     ----------
-    _name : str, default='player'
+    name : str, default='player'
         Player's name.
 
-    _role : str, default='Player'
-        Player's role in the match.
+    role : str, default='Player'
+        Player's role in the GameEnvironment.
 
-    _score : int, default=0
+    score : int, default=0
         Player's current score of the game.
     """
 
@@ -70,30 +70,22 @@ class Computer(ListInstanceMixin, BaseRole):
 
     Parameters
     ----------
-    _name : str, default='player'
+    name : str, default='player'
         Player's name.
 
-    _role : str, default='Player'
-        Player's role in the match.
+    role : str, default='Player'
+        Player's role in the GameEnvironment.
 
-    _score : int, default=0
+    score : int, default=0
         Player's current score of the game.
 
-    _seed : int or None, default=None
+    seed : int or None, default=None
         Random number generator's seed.
     """
 
     def __init__(self, name='ai', role='Computer', score=0, *, seed=None):
         super().__init__(role, name, score)
-        self._seed = seed
-
-    @property
-    def seed(self):
-        return self._seed
-
-    @seed.setter
-    def seed(self, value):
-        self._seed = value
+        self.seed = seed
 
     def _check_params(self):
         super()._check_params()
@@ -109,7 +101,7 @@ class Computer(ListInstanceMixin, BaseRole):
             self.seed = None
         random.seed(self.seed)
 
-    def get_move(self):
+    def get_move(self, prompt):
         """Randomized AI move
 
         Returns

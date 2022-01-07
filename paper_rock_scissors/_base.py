@@ -44,37 +44,9 @@ class BaseRole(metaclass=ABCMeta):
 
     @abstractmethod
     def __init__(self, role, name, score):
-        self._role = role
-        self._name = name
-        self._score = score
-
-    @property
-    def role(self):
-        return self._role
-
-    @role.setter
-    def role(self, value):
-        raise AttributeError("Role cannot be altered")
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        self._name = value
-
-    @property
-    def score(self):
-        return self._score
-
-    @score.setter
-    def score(self, value):
-        if not isinstance(value, int) or value < 0:
-            raise ValueError(
-                "Score must be positive integer or zero; got "
-                "(score=%d)" % value)
-        self._score = value
+        self.role = role
+        self.name = name
+        self.score = score
 
     @abstractmethod
     def _check_params(self):
@@ -93,23 +65,23 @@ class BaseRole(metaclass=ABCMeta):
             self.score = 0
 
     @abstractmethod
-    def get_move(self):
+    def get_move(self, prompt):
         """Generate current move."""
         pass
 
 
-class Match(ListInstanceMixin):
-    """Match class for paper_rock_scissors.
+class GameEnvironment(ListInstanceMixin):
+    """GameEnvironment class for paper_rock_scissors.
 
     This class controls the flow of the game.
 
     Parameters
     ----------
     _player : _role.Player
-        Player role in the match.
+        Player role in the GameEnvironment.
 
     _computer : _role.Computer
-        Computer role in the match.
+        Computer role in the GameEnvironment.
 
     _target_score : int, default=10
         Target score of the game. Anyone reaches this score
@@ -312,7 +284,7 @@ class Match(ListInstanceMixin):
         """
         if player_move is ai_move:
             return Outcome.DRAW
-        elif ai_move in Match._ROLES_MAPPING[player_move]:
+        elif ai_move in GameEnvironment._ROLES_MAPPING[player_move]:
             return Outcome.WIN
         else:
             return Outcome.LOSE
@@ -345,14 +317,14 @@ class Match(ListInstanceMixin):
                 print("\n%s is making a decision..." % self.computer.name)
             time.sleep(self._sleep)
 
-            ai_move = self.computer.get_move()
+            ai_move = self.computer.get_move("Choose a move for this round: ")
             if self.verbose >= 1:
                 print("%s's move: %s" % (self.computer.name,
                                          ai_move.name))
                 print("Current round is: %s vs %s" % (move.name,
                                                       ai_move.name))
 
-            outcome = Match._outcome(move, ai_move)
+            outcome = GameEnvironment._outcome(move, ai_move)
 
             if outcome is Outcome.WIN:
                 if self.verbose >= 1:
@@ -367,6 +339,7 @@ class Match(ListInstanceMixin):
             else:
                 if self.verbose >= 1:
                     print("It's a draw for this round")
+            self.curr_round += 1
 
             if self.player.score == self.target_score:
                 self.winner = self.player

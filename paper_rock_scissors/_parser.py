@@ -29,7 +29,7 @@ parser.add_argument('-s', '--seed', default=None,
                     help='Computer random number generator seed')
 parser.add_argument('-sp', '--sleep', type=int, default=1,
                     help='Sleep time when computer is making a decision')
-parser.add_argument('-v', '--verbose', actioin='count', default=1,
+parser.add_argument('-v', '--verbose', action='count', default=1,
                     help='Verbosity level')
 parser.add_argument('-V', '--version', action='version',
                     version=f'%(prog)s {VERSION}')
