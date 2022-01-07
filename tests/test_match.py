@@ -1,3 +1,4 @@
+import random
 import unittest
 from unittest.mock import patch
 
@@ -82,6 +83,7 @@ class MatchTestCase(unittest.TestCase):
                       max_rounds=10,
                       sleep=0,
                       verbose=0)
+        # random.seed(computer.seed)
         match.play()
         self.assertEqual(match.winner, computer)
 

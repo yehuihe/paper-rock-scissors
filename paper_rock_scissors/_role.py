@@ -105,7 +105,9 @@ class Computer(ListInstanceMixin, BaseRole):
                 f"got {self.seed} instead.",
                 RuntimeWarning,
             )
+            # Default seed set to None
             self.seed = None
+        random.seed(self.seed)
 
     def get_move(self):
         """Randomized AI move
