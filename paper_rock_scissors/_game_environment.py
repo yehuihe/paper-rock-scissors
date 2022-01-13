@@ -3,95 +3,12 @@
 """
 
 # Author: Yehui He <yehui.he@hotmail.com>
-
+import time
 import warnings
 
-from _base import MoveChoice, Outcome, ListInstanceMixin, BaseMode
+from _base import MoveChoice, Outcome, ListInstanceMixin
+from mode import StandardMode, DualMode, AIMode
 from _role import Player, Computer
-
-
-class StandardMode(BaseMode):
-
-    def __init__(
-            self, first_role, first_name, first_score,
-            second_role, second_name, second_score, **kwargs):
-        super().__init__(
-            first_role, first_name, first_score,
-            second_role, second_name, second_score, **kwargs)
-
-    def __str__(self):
-        return '\n\n\t------ Standard Mode ------'
-
-    def make_first_player(self):
-        return Player(
-            self.first_role,
-            self.first_name,
-            self.first_score
-        )
-
-    def make_second_player(self):
-        return Computer(
-            self.second_role,
-            self.second_name,
-            self.second_score,
-            getattr(self, 'seed')
-        )
-
-
-class DualMode(BaseMode):
-
-    def __init__(
-            self, first_role, first_name, first_score,
-            second_role, second_name, second_score, **kwargs):
-        super().__init__(
-            first_role, first_name, first_score,
-            second_role, second_name, second_score, **kwargs)
-
-    def __str__(self):
-        return '\n\n\t------ Standard Mode ------'
-
-    def make_first_player(self):
-        return Player(
-            self.first_role,
-            self.first_name,
-            self.first_score
-        )
-
-    def make_second_player(self):
-        return Player(
-            self.second_role,
-            self.second_name,
-            self.second_score
-        )
-
-
-class AIMode(BaseMode):
-
-    def __init__(
-            self, first_role, first_name, first_score,
-            second_role, second_name, second_score, **kwargs):
-        super().__init__(
-            first_role, first_name, first_score,
-            second_role, second_name, second_score, **kwargs)
-
-    def __str__(self):
-        return '\n\n\t------ Standard Mode ------'
-
-    def make_first_player(self):
-        return Computer(
-            self.first_role,
-            self.first_name,
-            self.first_score,
-            getattr(self, 'seed')
-        )
-
-    def make_second_player(self):
-        return Computer(
-            self.second_role,
-            self.second_name,
-            self.second_score,
-            getattr(self, 'seed')
-        )
 
 
 class GameEnvironment(ListInstanceMixin):
@@ -143,70 +60,62 @@ class GameEnvironment(ListInstanceMixin):
             sleep=1,
             verbose=0,
             winner=None):
-        self._first_player = factory.make_first_player()
-        self._second_player = factory.make_second_player()
-        self._target_score = target_score
-        self._curr_round = curr_round
-        self._max_rounds = max_rounds
-        self._sleep = sleep
-        self._verbose = verbose
-        self._winner = winner
+        self.first_player = factory.make_first_player()
+        self.second_player = factory.make_second_player()
+        self.target_score = target_score
+        self.curr_round = curr_round
+        self.max_rounds = max_rounds
+        self.sleep = sleep
+        self.verbose = verbose
+        self.winner = winner
 
-    @property
-    def first_player(self):
-        return self._first_player
-
-    @property
-    def second_player(self):
-        return self._second_player
-
-    @property
-    def target_score(self):
-        return self._target_score
-
-    @target_score.setter
-    def target_score(self, value):
-        self._target_score = value
-
-    @property
-    def curr_round(self):
-        return self._curr_round
-
-    @curr_round.setter
-    def curr_round(self, value):
-        self._curr_round = value
-
-    @property
-    def max_rounds(self):
-        return self._max_rounds
-
-    @max_rounds.setter
-    def max_rounds(self, value):
-        self._max_rounds = value
-
-    @property
-    def winner(self):
-        return self._winner
-
-    @winner.setter
-    def winner(self, value):
-        self._winner = value
-
-    @property
-    def sleep(self):
-        return self._sleep
-
-    @sleep.setter
-    def sleep(self, value):
-        self._sleep = value
-
-    @property
-    def verbose(self):
-        return self._verbose
-
-    @verbose.setter
-    def verbose(self, value):
-        self._verbose = value
+    # @property
+    # def target_score(self):
+    #     return self.target_score
+    #
+    # @target_score.setter
+    # def target_score(self, value):
+    #     self.target_score = value
+    #
+    # @property
+    # def curr_round(self):
+    #     return self.curr_round
+    #
+    # @curr_round.setter
+    # def curr_round(self, value):
+    #     self.curr_round = value
+    #
+    # @property
+    # def max_rounds(self):
+    #     return self.max_rounds
+    #
+    # @max_rounds.setter
+    # def max_rounds(self, value):
+    #     self.max_rounds = value
+    #
+    # @property
+    # def winner(self):
+    #     return self.winner
+    #
+    # @winner.setter
+    # def winner(self, value):
+    #     self.winner = value
+    #
+    # @property
+    # def sleep(self):
+    #     return self.sleep
+    #
+    # @sleep.setter
+    # def sleep(self, value):
+    #     self.sleep = value
+    #
+    # @property
+    # def verbose(self):
+    #     return self.verbose
+    #
+    # @verbose.setter
+    # def verbose(self, value):
+    #     self.verbose = value
 
     def _check_params(self):
         # target_score
@@ -231,25 +140,25 @@ class GameEnvironment(ListInstanceMixin):
             self.max_rounds = self.target_score
 
         # sleep
-        if not isinstance(self._sleep, int) or self._sleep < 0:
+        if not isinstance(self.sleep, int) or self.sleep < 0:
             warnings.warn(
                 "sleep must be positive integer;"
-                f"got {self._sleep} instead.",
+                f"got {self.sleep} instead.",
                 RuntimeWarning,
             )
             # Default sleep set to 1
-            self._sleep = 1
+            self.sleep = 1
 
         # verbose
-        if not isinstance(self._verbose, int) or \
-                self._verbose < 0 or self._verbose > 3:
+        if not isinstance(self.verbose, int) or \
+                self.verbose < 0 or self.verbose > 3:
             warnings.warn(
                 "verbose must be positive integer between 0 and 3"
-                f"got {self._verbose} instead.",
+                f"got {self.verbose} instead.",
                 RuntimeWarning,
             )
             # Default verbose set to 1
-            self._verbose = 1
+            self.verbose = 1
 
     @staticmethod
     def _pprint_rules():
@@ -268,20 +177,20 @@ class GameEnvironment(ListInstanceMixin):
         """Return state of the current game."""
 
         return "Current state of the game: \n" \
-               "%(player_name)s score: %(player_score)d \n" \
-               "%(computer_name)s score: %(computer_score)d \n" \
+               "%(first_player_name)s score: %(first_player_score)d \n" \
+               "%(second_player_name)s score: %(second_player_score)d \n" \
                "Target Score: %(target_score)d\n" \
                "Current Round: %(curr_round)d\n" \
                "Maximum Rounds: %(max_rounds)d\n" \
                "Sleep: %(sleep)d\nWinner: %(winner)s\n" % \
-               {'player_name': self.player.name,
-                'player_score': self.player.score,
-                'computer_name': self.computer.name,
-                'computer_score': self.computer.score,
+               {'first_player_name': self.first_player.name,
+                'first_player_score': self.first_player.score,
+                'second_player_name': self.second_player.name,
+                'second_player_score': self.second_player.score,
                 'target_score': self.target_score,
                 'curr_round': self.curr_round,
                 'max_rounds': self.max_rounds,
-                'sleep': self._sleep,
+                'sleep': self.sleep,
                 'winner': self.winner}
 
     @staticmethod
@@ -313,10 +222,6 @@ class GameEnvironment(ListInstanceMixin):
             return Outcome.LOSE
 
     def play(self):
-        # Validate roles input parameters
-        self.player._check_params()
-        self.computer._check_params()
-
         # Validate input parameters
         self._check_params()
 
@@ -330,52 +235,54 @@ class GameEnvironment(ListInstanceMixin):
 
             # Prompt input from player
             # Return MoveChoice
-            move = self.player.get_move("Choose a move for this round: ")
+            move = self.first_player.get_move("Choose a move for this round: ")
 
             if self.verbose >= 1:
                 # Notify player's choice
-                print("%s's move: %s" % (self.player.name, move.name))
+                print("%s's move: %s" % (self.first_player.name, move.name))
 
                 # Computer's turn
-                print("\n%s is making a decision..." % self.computer.name)
-            time.sleep(self._sleep)
+                print("\n%s is making a decision..." % self.second_player.name)
+            time.sleep(self.sleep)
 
-            ai_move = self.computer.get_move("Choose a move for this round: ")
+            second_player_move = self.second_player.get_move(
+                "Choose a move for this round: ")
             if self.verbose >= 1:
-                print("%s's move: %s" % (self.computer.name,
-                                         ai_move.name))
+                print("%s's move: %s" % (self.second_player.name,
+                                         second_player_move.name))
                 print("Current round is: %s vs %s" % (move.name,
-                                                      ai_move.name))
+                                                      second_player_move.name))
 
-            outcome = GameEnvironment._outcome(move, ai_move)
+            outcome = GameEnvironment._outcome(move, second_player_move)
 
             if outcome is Outcome.WIN:
                 if self.verbose >= 1:
                     print("Winner of the current round is: %s \n"
-                          % self.player.name)
-                self.player.score += 1
+                          % self.first_player.name)
+                self.first_player.score += 1
             elif outcome is Outcome.LOSE:
                 if self.verbose >= 1:
                     print("Winner of the current round is: %s \n"
-                          % self.computer.name)
-                self.computer.score += 1
+                          % self.second_player.name)
+                self.second_player.score += 1
             else:
                 if self.verbose >= 1:
                     print("It's a draw for this round")
             self.curr_round += 1
 
-            if self.player.score == self.target_score:
-                self.winner = self.player
-            elif self.computer.score == self.target_score:
-                self.winner = self.computer
+            if self.first_player.score == self.target_score:
+                self.winner = self.first_player
+            elif self.second_player.score == self.target_score:
+                self.winner = self.second_player
 
         # Display final winner of the game
         # Whoever has the highest score is the winner
         # if there is not winner decided
         # If draw then computer wins
         if not self.winner:
-            self.winner = self.player if \
-                self.player.score > self.computer.score else self.computer
+            self.winner = self.first_player if \
+                self.first_player.score > self.second_player.score else \
+                self.second_player
 
         print(f"Winner of the game: {self.winner.name}\n")
         print(self._pprint_state())

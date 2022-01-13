@@ -35,68 +35,39 @@ class ListInstanceMixin:
             self.__attrnames())
 
 
-class BaseMode(metaclass=ABCMeta):
-
-    @abstractmethod
-    def __init__(
-            self, first_role, first_name, first_score,
-            second_role, second_name, second_score, **kwargs):
-        self.first_role = first_role
-        self.first_name = first_name
-        self.first_score = first_score
-        self.second_role = second_role
-        self.second_name = second_name
-        self.second_score = second_score
-
-        for key in kwargs:
-            setattr(self, key, kwargs[key])
-
-    @abstractmethod
-    def __str__(self):
-        pass
-
-    @abstractmethod
-    def make_first_player(self):
-        pass
-
-    @abstractmethod
-    def make_second_player(self):
-        pass
-
-
-class BaseRole(metaclass=ABCMeta):
-    """Base class for roles in paper_rock_scissors.
-
-    Warning: This class should not be used directly.
-    Use derived classes instead.
-    """
-
-    @abstractmethod
-    def __init__(self, role, name, score):
-        self.role = role
-        self.name = name
-        self.score = score
-
-    @abstractmethod
-    def _check_params(self):
-        # name
-        if not isinstance(self.name, str):
-            raise ValueError(f"name should be string, "
-                             f"got {self.name} instead.")
-
-        # score
-        if not isinstance(self.score, int) or self.score < 0:
-            warnings.warn(
-                "Score must be positive integer or zero; "
-                f"got {self.score} instead.",
-                RuntimeWarning,
-            )
-            self.score = 0
-
-    @abstractmethod
-    def get_move(self, prompt):
-        """Generate current move."""
-        pass
+# class BaseRole(metaclass=ABCMeta):
+#     """Base class for roles in paper_rock_scissors.
+#
+#     Warning: This class should not be used directly.
+#     Use derived classes instead.
+#     """
+#
+#     @abstractmethod
+#     def __init__(self, role, name, score):
+#         self.role = role
+#         self.name = name
+#         self.score = score
+#
+#     @abstractmethod
+#     def _check_params(self):
+#         # name
+#         if not isinstance(self.name, str):
+#             raise ValueError(f"name should be string, "
+#                              f"got {self.name} instead.")
+#
+#         # score
+#         if not isinstance(self.score, int) or self.score < 0:
+#             warnings.warn(
+#                 "Score must be positive integer or zero; "
+#                 f"got {self.score} instead.",
+#                 RuntimeWarning,
+#             )
+#             self.score = 0
+#
+#     @abstractmethod
+#     def get_move(self, prompt):
+#         """Generate current move."""
+#         pass
 
 
 # class StandardMode(ListInstanceMixin):

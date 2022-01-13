@@ -5,8 +5,57 @@
 
 import random
 import warnings
+from abc import ABCMeta, abstractmethod
 
-from ._base import ListInstanceMixin, BaseRole, MoveChoice
+from ._base import ListInstanceMixin, MoveChoice
+
+
+class BaseRole(metaclass=ABCMeta):
+    """Base class for roles in paper_rock_scissors.
+
+    Warning: This class should not be used directly.
+    Use derived classes instead.
+    """
+
+    @abstractmethod
+    def __init__(self, role, name, score):
+        self.role = role
+        self.name = name
+        self.score = score
+        # name
+        if not isinstance(self.name, str):
+            raise ValueError(f"name should be string, "
+                             f"got {self.name} instead.")
+
+        # score
+        if not isinstance(self.score, int) or self.score < 0:
+            warnings.warn(
+                "Score must be positive integer or zero; "
+                f"got {self.score} instead.",
+                RuntimeWarning,
+            )
+            self.score = 0
+
+    # @abstractmethod
+    # def _check_params(self):
+    #     # name
+    #     if not isinstance(self.name, str):
+    #         raise ValueError(f"name should be string, "
+    #                          f"got {self.name} instead.")
+    #
+    #     # score
+    #     if not isinstance(self.score, int) or self.score < 0:
+    #         warnings.warn(
+    #             "Score must be positive integer or zero; "
+    #             f"got {self.score} instead.",
+    #             RuntimeWarning,
+    #         )
+    #         self.score = 0
+
+    @abstractmethod
+    def get_move(self, prompt):
+        """Generate current move."""
+        pass
 
 
 class Player(ListInstanceMixin, BaseRole):
@@ -27,8 +76,8 @@ class Player(ListInstanceMixin, BaseRole):
     def __init__(self, name='player', role='Player', score=0):
         super().__init__(role, name, score)
 
-    def _check_params(self):
-        super()._check_params()
+    # def _check_params(self):
+    #     super()._check_params()
 
     def _pprint_moves(self):
         res = f"{self.name}'s turn. Choose current round move within the following: \n"
@@ -86,10 +135,6 @@ class Computer(ListInstanceMixin, BaseRole):
     def __init__(self, name='ai', role='Computer', score=0, seed=None):
         super().__init__(role, name, score)
         self.seed = seed
-
-    def _check_params(self):
-        super()._check_params()
-
         # seed
         if self.seed and not isinstance(self.seed, int):
             warnings.warn(
@@ -100,6 +145,20 @@ class Computer(ListInstanceMixin, BaseRole):
             # Default seed set to None
             self.seed = None
         random.seed(self.seed)
+
+    # def _check_params(self):
+    #     super()._check_params()
+    #
+    #     # seed
+    #     if self.seed and not isinstance(self.seed, int):
+    #         warnings.warn(
+    #             "Seed must be integer or None; "
+    #             f"got {self.seed} instead.",
+    #             RuntimeWarning,
+    #         )
+    #         # Default seed set to None
+    #         self.seed = None
+    #     random.seed(self.seed)
 
     def get_move(self, prompt):
         """Randomized AI move
